@@ -1,0 +1,20 @@
+syntax = "proto3";
+package myMsg;
+
+// =====================================================================================================================
+//  Shared
+// =====================================================================================================================
+
+message MyMsg {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+}
+
+message Error {
+    string message = 1;
+}
+
+service customMessage {
+    rpc UserRegistered (MyMsg) returns (Error);
+}
