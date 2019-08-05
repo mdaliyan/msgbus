@@ -24,7 +24,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type NodeInfo struct {
+type SubscriberInfo struct {
 	Topics               []string `protobuf:"bytes,2,rep,name=topics,proto3" json:"topics,omitempty"`
 	Addr                 string   `protobuf:"bytes,3,opt,name=addr,proto3" json:"addr,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -32,39 +32,39 @@ type NodeInfo struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *NodeInfo) Reset()         { *m = NodeInfo{} }
-func (m *NodeInfo) String() string { return proto.CompactTextString(m) }
-func (*NodeInfo) ProtoMessage()    {}
-func (*NodeInfo) Descriptor() ([]byte, []int) {
+func (m *SubscriberInfo) Reset()         { *m = SubscriberInfo{} }
+func (m *SubscriberInfo) String() string { return proto.CompactTextString(m) }
+func (*SubscriberInfo) ProtoMessage()    {}
+func (*SubscriberInfo) Descriptor() ([]byte, []int) {
 	return fileDescriptor_52c312aeb796cbbb, []int{0}
 }
 
-func (m *NodeInfo) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_NodeInfo.Unmarshal(m, b)
+func (m *SubscriberInfo) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubscriberInfo.Unmarshal(m, b)
 }
-func (m *NodeInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_NodeInfo.Marshal(b, m, deterministic)
+func (m *SubscriberInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubscriberInfo.Marshal(b, m, deterministic)
 }
-func (m *NodeInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NodeInfo.Merge(m, src)
+func (m *SubscriberInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubscriberInfo.Merge(m, src)
 }
-func (m *NodeInfo) XXX_Size() int {
-	return xxx_messageInfo_NodeInfo.Size(m)
+func (m *SubscriberInfo) XXX_Size() int {
+	return xxx_messageInfo_SubscriberInfo.Size(m)
 }
-func (m *NodeInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_NodeInfo.DiscardUnknown(m)
+func (m *SubscriberInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubscriberInfo.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NodeInfo proto.InternalMessageInfo
+var xxx_messageInfo_SubscriberInfo proto.InternalMessageInfo
 
-func (m *NodeInfo) GetTopics() []string {
+func (m *SubscriberInfo) GetTopics() []string {
 	if m != nil {
 		return m.Topics
 	}
 	return nil
 }
 
-func (m *NodeInfo) GetAddr() string {
+func (m *SubscriberInfo) GetAddr() string {
 	if m != nil {
 		return m.Addr
 	}
@@ -111,26 +111,25 @@ func (m *Error) GetMessage() string {
 }
 
 func init() {
-	proto.RegisterType((*NodeInfo)(nil), "grpc_msgbus.NodeInfo")
-	proto.RegisterType((*Error)(nil), "grpc_msgbus.Error")
+	proto.RegisterType((*SubscriberInfo)(nil), "msgbus.SubscriberInfo")
+	proto.RegisterType((*Error)(nil), "msgbus.Error")
 }
 
 func init() { proto.RegisterFile("messageBusService.proto", fileDescriptor_52c312aeb796cbbb) }
 
 var fileDescriptor_52c312aeb796cbbb = []byte{
-	// 179 bytes of a gzipped FileDescriptorProto
+	// 172 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0xcf, 0x4d, 0x2d, 0x2e,
 	0x4e, 0x4c, 0x4f, 0x75, 0x2a, 0x2d, 0x0e, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e, 0xd5, 0x2b, 0x28,
-	0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x4e, 0x2f, 0x2a, 0x48, 0x8e, 0xcf, 0x2d, 0x4e, 0x4f, 0x2a, 0x2d,
-	0x56, 0x32, 0xe3, 0xe2, 0xf0, 0xcb, 0x4f, 0x49, 0xf5, 0xcc, 0x4b, 0xcb, 0x17, 0x12, 0xe3, 0x62,
-	0x2b, 0xc9, 0x2f, 0xc8, 0x4c, 0x2e, 0x96, 0x60, 0x52, 0x60, 0xd6, 0xe0, 0x0c, 0x82, 0xf2, 0x84,
-	0x84, 0xb8, 0x58, 0x12, 0x53, 0x52, 0x8a, 0x24, 0x98, 0x15, 0x18, 0x35, 0x38, 0x83, 0xc0, 0x6c,
-	0x25, 0x45, 0x2e, 0x56, 0xd7, 0xa2, 0xa2, 0xfc, 0x22, 0x21, 0x09, 0x2e, 0x76, 0xa8, 0x45, 0x12,
-	0x8c, 0x60, 0x79, 0x18, 0xd7, 0xa8, 0x95, 0x91, 0x4b, 0x10, 0xc3, 0x0d, 0x42, 0x66, 0x5c, 0x9c,
-	0xc1, 0xa5, 0x49, 0xc5, 0xc9, 0x45, 0x99, 0x49, 0xa9, 0x42, 0xa2, 0x7a, 0x48, 0x6e, 0xd1, 0x83,
-	0x39, 0x44, 0x4a, 0x08, 0x45, 0x18, 0x62, 0x8f, 0x05, 0x17, 0x77, 0x68, 0x5e, 0x31, 0x19, 0x3a,
-	0x93, 0xd8, 0xc0, 0xde, 0x36, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0xfc, 0x4c, 0x12, 0xe6, 0x11,
-	0x01, 0x00, 0x00,
+	0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcb, 0x2d, 0x4e, 0x4f, 0x2a, 0x2d, 0x56, 0xb2, 0xe1, 0xe2, 0x0b,
+	0x2e, 0x4d, 0x2a, 0x4e, 0x2e, 0xca, 0x4c, 0x4a, 0x2d, 0xf2, 0xcc, 0x4b, 0xcb, 0x17, 0x12, 0xe3,
+	0x62, 0x2b, 0xc9, 0x2f, 0xc8, 0x4c, 0x2e, 0x96, 0x60, 0x52, 0x60, 0xd6, 0xe0, 0x0c, 0x82, 0xf2,
+	0x84, 0x84, 0xb8, 0x58, 0x12, 0x53, 0x52, 0x8a, 0x24, 0x98, 0x15, 0x18, 0x35, 0x38, 0x83, 0xc0,
+	0x6c, 0x25, 0x45, 0x2e, 0x56, 0xd7, 0xa2, 0xa2, 0xfc, 0x22, 0x21, 0x09, 0x2e, 0x76, 0xa8, 0x4d,
+	0x12, 0x8c, 0x60, 0x79, 0x18, 0xd7, 0xa8, 0x96, 0x4b, 0x10, 0xc3, 0x0d, 0x42, 0x46, 0x5c, 0x9c,
+	0x70, 0x5b, 0x85, 0xc4, 0xf4, 0x20, 0x6e, 0xd1, 0x43, 0x75, 0x88, 0x14, 0x2f, 0x4c, 0x1c, 0x62,
+	0x85, 0x09, 0x17, 0x77, 0x68, 0x5e, 0x31, 0x89, 0xba, 0x92, 0xd8, 0xc0, 0xde, 0x35, 0x06, 0x04,
+	0x00, 0x00, 0xff, 0xff, 0x80, 0x2a, 0x17, 0x18, 0x09, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -145,8 +144,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MessageBusServiceClient interface {
-	Subscribe(ctx context.Context, in *NodeInfo, opts ...grpc.CallOption) (*Error, error)
-	Unsubscribe(ctx context.Context, in *NodeInfo, opts ...grpc.CallOption) (*Error, error)
+	Subscribe(ctx context.Context, in *SubscriberInfo, opts ...grpc.CallOption) (*Error, error)
+	Unsubscribe(ctx context.Context, in *SubscriberInfo, opts ...grpc.CallOption) (*Error, error)
 }
 
 type messageBusServiceClient struct {
@@ -157,18 +156,18 @@ func NewMessageBusServiceClient(cc *grpc.ClientConn) MessageBusServiceClient {
 	return &messageBusServiceClient{cc}
 }
 
-func (c *messageBusServiceClient) Subscribe(ctx context.Context, in *NodeInfo, opts ...grpc.CallOption) (*Error, error) {
+func (c *messageBusServiceClient) Subscribe(ctx context.Context, in *SubscriberInfo, opts ...grpc.CallOption) (*Error, error) {
 	out := new(Error)
-	err := c.cc.Invoke(ctx, "/grpc_msgbus.messageBusService/Subscribe", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/msgbus.messageBusService/Subscribe", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *messageBusServiceClient) Unsubscribe(ctx context.Context, in *NodeInfo, opts ...grpc.CallOption) (*Error, error) {
+func (c *messageBusServiceClient) Unsubscribe(ctx context.Context, in *SubscriberInfo, opts ...grpc.CallOption) (*Error, error) {
 	out := new(Error)
-	err := c.cc.Invoke(ctx, "/grpc_msgbus.messageBusService/Unsubscribe", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/msgbus.messageBusService/Unsubscribe", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -177,18 +176,18 @@ func (c *messageBusServiceClient) Unsubscribe(ctx context.Context, in *NodeInfo,
 
 // MessageBusServiceServer is the server API for MessageBusService service.
 type MessageBusServiceServer interface {
-	Subscribe(context.Context, *NodeInfo) (*Error, error)
-	Unsubscribe(context.Context, *NodeInfo) (*Error, error)
+	Subscribe(context.Context, *SubscriberInfo) (*Error, error)
+	Unsubscribe(context.Context, *SubscriberInfo) (*Error, error)
 }
 
 // UnimplementedMessageBusServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedMessageBusServiceServer struct {
 }
 
-func (*UnimplementedMessageBusServiceServer) Subscribe(ctx context.Context, req *NodeInfo) (*Error, error) {
+func (*UnimplementedMessageBusServiceServer) Subscribe(ctx context.Context, req *SubscriberInfo) (*Error, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
-func (*UnimplementedMessageBusServiceServer) Unsubscribe(ctx context.Context, req *NodeInfo) (*Error, error) {
+func (*UnimplementedMessageBusServiceServer) Unsubscribe(ctx context.Context, req *SubscriberInfo) (*Error, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unsubscribe not implemented")
 }
 
@@ -197,7 +196,7 @@ func RegisterMessageBusServiceServer(s *grpc.Server, srv MessageBusServiceServer
 }
 
 func _MessageBusService_Subscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NodeInfo)
+	in := new(SubscriberInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -206,16 +205,16 @@ func _MessageBusService_Subscribe_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc_msgbus.messageBusService/Subscribe",
+		FullMethod: "/msgbus.messageBusService/Subscribe",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MessageBusServiceServer).Subscribe(ctx, req.(*NodeInfo))
+		return srv.(MessageBusServiceServer).Subscribe(ctx, req.(*SubscriberInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _MessageBusService_Unsubscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NodeInfo)
+	in := new(SubscriberInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -224,16 +223,16 @@ func _MessageBusService_Unsubscribe_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc_msgbus.messageBusService/Unsubscribe",
+		FullMethod: "/msgbus.messageBusService/Unsubscribe",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MessageBusServiceServer).Unsubscribe(ctx, req.(*NodeInfo))
+		return srv.(MessageBusServiceServer).Unsubscribe(ctx, req.(*SubscriberInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 var _MessageBusService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc_msgbus.messageBusService",
+	ServiceName: "msgbus.messageBusService",
 	HandlerType: (*MessageBusServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

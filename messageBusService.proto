@@ -5,7 +5,7 @@ package msgbus;
 //  Shared
 // =====================================================================================================================
 
-message NodeInfo {
+message SubscriberInfo {
     repeated string topics = 2;
     string addr = 3;
 }
@@ -15,6 +15,6 @@ message Error {
 }
 
 service messageBusService {
-    rpc Subscribe (NodeInfo) returns (Error);
-    rpc Unsubscribe (NodeInfo) returns (Error);
+    rpc Subscribe (SubscriberInfo) returns (Error);
+    rpc Unsubscribe (SubscriberInfo) returns (Error);
 }

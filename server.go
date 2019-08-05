@@ -2,6 +2,7 @@ package msgbus
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -12,7 +13,7 @@ import (
 
 func NewMessageBusPublisher(address string) (*MassageBusServer, error) {
 	mb := &MassageBusServer{
-		Topics: map[string]Subscribers{},
+		Topics: map[string]*Topic{},
 	}
 	mb.Server = grpc.NewServer()
 	RegisterMessageBusServiceServer(mb.Server, mb)
@@ -27,28 +28,29 @@ func NewMessageBusPublisher(address string) (*MassageBusServer, error) {
 
 		for {
 
-			time.Sleep(time.Second * 10)
+			time.Sleep(time.Second * 5)
 
 			mb.lock.Lock()
 
-			for t, subscribers := range mb.Topics {
+			for _, topic := range mb.Topics {
 
-				var lostSubscribers Subscribers
+				var Subscribers []*Subscriber
 
-				for _, subscriber := range subscribers {
+				for _, subscriber := range topic.Subscribers {
 
-					if subscriber.Conn.GetState() == connectivity.Ready {
+					if subscriber.Conn.GetState() != connectivity.Ready {
 
-						lostSubscribers = append(lostSubscribers, subscriber)
+						subscriber.Conn.Close()
 
 					} else {
 
-						subscriber.Conn.Close()
+						Subscribers = append(Subscribers, subscriber)
+
 					}
 
 				}
 
-				mb.Topics[t] = subscribers
+				topic.Subscribers = Subscribers
 
 			}
 
@@ -60,51 +62,80 @@ func NewMessageBusPublisher(address string) (*MassageBusServer, error) {
 	return mb, err
 }
 
-type Subscribers []*Subscriber
+type Topic struct {
+	Subscribers []*Subscriber
+	turn        int
+	lock        sync.RWMutex
+}
+
+func (t *Topic) getRoundRobinSubscriber() (s *Subscriber, err error) {
+	t.lock.Lock()
+	defer func() {
+		t.lock.Unlock()
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
+	l := len(t.Subscribers)
+	if l == 0 {
+		return nil, errors.New("no subscriber")
+	}
+	t.turn = (t.turn + 1) % l
+	s = t.Subscribers[t.turn]
+	return
+}
 
 type MassageBusServer struct {
-	Topics map[string]Subscribers
+	Topics map[string]*Topic
 	lock   sync.RWMutex
 	Server *grpc.Server
 	Addr   *grpc.Server
 }
 
-func (mb *MassageBusServer) Subscribe(ctx context.Context, n *NodeInfo) (*Error, error) {
-	_, _ = mb.Unsubscribe(ctx, n)
+func (mb *MassageBusServer) Subscribe(ctx context.Context, s *SubscriberInfo) (*Error, error) {
+	_, _ = mb.Unsubscribe(ctx, s)
 	mb.lock.Lock()
 	defer mb.lock.Unlock()
-	cnn, err := grpc.Dial(n.GetAddr(), grpc.WithInsecure())
+	cnn, err := grpc.Dial(s.GetAddr(), grpc.WithInsecure())
 	if err != nil {
 		return &Error{Message: err.Error()}, err
 	}
-	for _, topic := range n.GetTopics() {
-		node := newSubscriberNode(n.GetAddr(), topic, cnn)
-		newSubscribers := append(mb.Topics[topic], node)
-		mb.Topics[topic] = newSubscribers
+	for _, topic := range s.GetTopics() {
+		subscriber := newSubscriberNode(s.GetAddr(), topic, cnn)
+		t, ok := mb.Topics[topic]
+		if ok {
+			t.Subscribers = append(t.Subscribers, subscriber)
+		} else {
+			mb.Topics[topic] = &Topic{
+				Subscribers: []*Subscriber{subscriber},
+			}
+		}
 	}
 
-	fmt.Println(n.GetAddr(), "registered on", n.GetTopics(), )
+	fmt.Println(s.GetAddr(), "registered on", s.GetTopics(), )
+
 	return &Error{Message: ""}, err
 
 }
 
-func (mb *MassageBusServer) Unsubscribe(ctx context.Context, n *NodeInfo) (e *Error, err error) {
+func (mb *MassageBusServer) Unsubscribe(ctx context.Context, s *SubscriberInfo) (e *Error, err error) {
 
 	mb.lock.Lock()
 
 	defer mb.lock.Unlock()
 
-	for _, topic := range n.GetTopics() {
+	for _, topic := range s.GetTopics() {
 
-		for _, subscribers := range mb.Topics {
+		for _, t := range mb.Topics {
 
-			for _, subscriber := range subscribers {
+			for _, subscriber := range t.Subscribers {
 
-				if subscriber.ID == fmt.Sprintf(`%s-%s`, topic, n.GetAddr()) {
+				if subscriber.ID == fmt.Sprintf(`%s-%s`, topic, s.GetAddr()) {
 
 					subscriber.Conn.Close()
 
 				}
+
 			}
 
 		}
@@ -114,10 +145,31 @@ func (mb *MassageBusServer) Unsubscribe(ctx context.Context, n *NodeInfo) (e *Er
 	return
 }
 
+func (mb *MassageBusServer) CallRoundRobin(topic string, fn func(*grpc.ClientConn)) {
+	mb.lock.Lock()
+	t, ok := mb.Topics[topic]
+	mb.lock.Unlock()
+	if ! ok {
+		return
+	}
+	c, err := t.getRoundRobinSubscriber()
+	if err == nil && c != nil {
+		if c.Conn.GetState() == connectivity.Ready {
+			fn(c.Conn)
+		} else {
+			mb.CallRoundRobin(topic, fn)
+		}
+	}
+}
+
 func (mb *MassageBusServer) Broadcast(topic string, fn func(*grpc.ClientConn)) {
 	mb.lock.Lock()
-	subscribers := append(Subscribers{}, mb.Topics[topic]...)
+	t, ok := mb.Topics[topic]
 	mb.lock.Unlock()
+	if ! ok {
+		return
+	}
+	subscribers := append([]*Subscriber{}, t.Subscribers...)
 	for _, subscriber := range subscribers {
 		if subscriber.Conn.GetState() == connectivity.Ready {
 			fn(subscriber.Conn)
@@ -126,11 +178,10 @@ func (mb *MassageBusServer) Broadcast(topic string, fn func(*grpc.ClientConn)) {
 }
 
 type Subscriber struct {
-	ID        string
-	Addr      string
-	Topic     string
-	Conn      *grpc.ClientConn
-	Listening bool
+	ID    string
+	Addr  string
+	Topic string
+	Conn  *grpc.ClientConn
 }
 
 func newSubscriberNode(Addr string, topic string, Conn *grpc.ClientConn) (*Subscriber) {

@@ -1,13 +1,13 @@
 package msgbus
 
 import (
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/keepalive"
-	"time"
-	"google.golang.org/grpc/connectivity"
-	"fmt"
 	"context"
+	"fmt"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
+	"google.golang.org/grpc/keepalive"
 	"net"
+	"time"
 )
 
 func NewSubscriber(broadcastAddr string, keepalive bool) (l Listener) {
@@ -72,7 +72,7 @@ func (l *Listener) connect() (err error) {
 func (l *Listener) subscribe() (err error) {
 	clusterManager := NewMessageBusServiceClient(l.conn)
 	_, err = clusterManager.Subscribe(context.Background(),
-		&NodeInfo{
+		&SubscriberInfo{
 			Topics: l.topics,
 			Addr:   l.broadcastAddr,
 		},

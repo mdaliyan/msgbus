@@ -19,8 +19,7 @@ func main() {
 
 	bus := msgbus.NewSubscriber(broadcastAddr, true)
 
-	myMsg.RegisterCustomMessageServer(
-		bus.SubscriberConnection(), new(userEvents))
+	myMsg.RegisterCustomMessageServer(bus.SubscriberConnection(), new(userEvents))
 
 	err := bus.ListenForBroadcasts(publisherAddr, []string{"user_registered"})
 
